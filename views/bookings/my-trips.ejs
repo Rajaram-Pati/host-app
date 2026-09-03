@@ -1,0 +1,62 @@
+<% layout("/layouts/boilerplate") %>
+<%
+  const statusClass = (status) => status === "Confirmed" ? "success" : status === "Cancelled" ? "danger" : status === "Completed" ? "secondary" : "warning";
+%>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+      <h2 class="mb-1">My Trips</h2>
+      <p class="text-muted mb-0">Your booking requests, upcoming stays, and trip history.</p>
+    </div>
+    <a href="/listings" class="btn add-btn dashboard-action">Explore Listings</a>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Host</th>
+              <th>Dates</th>
+              <th>Guests</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let booking of bookings) { %>
+              <tr>
+                <td>
+                  <strong><%= booking.listing ? booking.listing.title : "Deleted listing" %></strong>
+                  <div class="text-muted small">&#8377; <%= Number(booking.totalPrice || 0).toLocaleString("en-IN") %></div>
+                </td>
+                <td><%= booking.host ? booking.host.username : "-" %></td>
+                <td><%= booking.checkIn.toLocaleDateString("en-IN") %> - <%= booking.checkOut.toLocaleDateString("en-IN") %></td>
+                <td><%= booking.totalGuests %></td>
+                <td><span class="badge text-bg-<%= statusClass(booking.bookingStatus) %> booking-status"><%= booking.bookingStatus %></span></td>
+                <td><span class="badge text-bg-light border"><%= booking.paymentStatus %></span></td>
+                <td class="admin-actions">
+                  <a href="/bookings/<%= booking._id %>" class="btn btn-sm btn-outline-secondary">View Details</a>
+                  <% if (["Pending", "Confirmed"].includes(booking.bookingStatus) && booking.checkIn > new Date()) { %>
+                    <form method="POST" action="/bookings/<%= booking._id %>/cancel">
+                      <input type="text" name="cancellationReason" class="form-control form-control-sm" placeholder="Reason">
+                      <button class="btn btn-sm btn-danger">Cancel Booking</button>
+                    </form>
+                  <% } %>
+                  <button class="btn btn-sm btn-outline-dark" disabled>Receipt</button>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (bookings.length === 0) { %>
+        <p class="text-muted mb-0">No trips yet.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

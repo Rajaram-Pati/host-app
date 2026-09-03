@@ -1,0 +1,80 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="new-form-container">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h2 class="mb-0">Become a Host</h2>
+          <% if (existingRequest) { %>
+            <span class="badge text-bg-<%= existingRequest.status === 'approved' ? 'success' : existingRequest.status === 'rejected' ? 'danger' : 'warning' %>">
+              <%= existingRequest.status %>
+            </span>
+          <% } %>
+        </div>
+
+        <form method="POST" action="/host/request" class="needs-validation" enctype="multipart/form-data" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Full Name</label>
+              <input type="text" name="fullName" class="form-control" value="<%= currentUser.fullName || currentUser.username %>" required>
+              <div class="invalid-feedback">Please enter your full name.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" name="phone" class="form-control" required>
+              <div class="invalid-feedback">Please enter your phone number.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">City</label>
+              <input type="text" name="city" class="form-control" required>
+              <div class="invalid-feedback">Please enter your city.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <input type="text" name="state" class="form-control" required>
+              <div class="invalid-feedback">Please enter your state.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Country</label>
+              <input type="text" name="country" class="form-control" required>
+              <div class="invalid-feedback">Please enter your country.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Why do you want to become a Host?</label>
+              <textarea name="reason" class="form-control" rows="4" required></textarea>
+              <div class="invalid-feedback">Please tell us why you want to host.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Government ID Number</label>
+              <input type="text" name="governmentIdNumber" class="form-control" required>
+              <div class="invalid-feedback">Please enter your Government ID number.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Upload one Government ID Image</label>
+              <input type="file" name="governmentIdImage" class="form-control" accept="image/*" required>
+              <div class="invalid-feedback">Please upload your Government ID image.</div>
+            </div>
+          </div>
+
+          <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" name="confirmInfo" id="confirmInfo" required>
+            <label class="form-check-label" for="confirmInfo">
+              I confirm all information is correct.
+            </label>
+            <div class="invalid-feedback">Please confirm the information before submitting.</div>
+          </div>
+
+          <button class="btn add-btn mt-4">Submit Host Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

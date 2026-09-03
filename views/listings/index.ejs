@@ -1,0 +1,89 @@
+<% layout("/layouts/boilerplate") %>
+<%
+    const listingActiveCategory = typeof activeCategory !== "undefined" ? activeCategory : "";
+    const listingCategories = typeof categoryOptions !== "undefined" ? categoryOptions : [];
+    const listings = typeof allListings !== "undefined" ? allListings : [];
+%>
+
+<div class="container mt-4">
+
+    <div id="filters" class="listing-filter-panel">
+        <div class="filters-bar">
+            <a href="/listings" class="filter-chip <%= !listingActiveCategory ? 'active' : '' %>">
+                <i class="fa-solid fa-border-all"></i>
+                <span>All</span>
+            </a>
+
+            <% for (let category of listingCategories) { %>
+                <a
+                    href="/listings/filter/<%= category.value %>"
+                    class="filter-chip <%= listingActiveCategory === category.value ? 'active' : '' %>"
+                >
+                    <i class="fa-solid <%= category.icon %>"></i>
+                    <span><%= category.label %></span>
+                </a>
+            <% } %>
+        </div>
+
+        <div class="tax-toggle">
+            <label class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" role="switch" id="taxSwitch">
+                <span class="form-check-label">Display total with taxes</span>
+            </label>
+        </div>
+    </div>
+
+    <h2 class="mb-4">All Listings</h2>
+
+    <% if (listings.length === 0) { %>
+        <div class="alert alert-light border text-center">
+            No listings found in this category
+        </div>
+    <% } %>
+
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+
+        <% for(let listing of listings) { %>
+
+            <div class="col">
+
+                <a href="/listings/<%= listing._id %>" class="listing-link">
+
+                    <div class="card listing-card">
+
+                        <img
+                            src="<%= listing.image && listing.image.url ? listing.image.url : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80' %>"
+                            class="card-img-top listing-img"
+                            alt="listing_image"
+                        >
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                <%= listing.title %>
+                            </h5>
+
+                            <p class="card-text listing-price">
+                                &#8377; <%= Number(listing.price || 0).toLocaleString("en-IN") %> / night
+                                <span class="tax-info">
+                                    &#8377; <%= Math.round(Number(listing.price || 0) * 1.18).toLocaleString("en-IN") %> with taxes
+                                </span>
+                            </p>
+
+                            <p class="card-text">
+                                <%= listing.location %>, <%= listing.country %>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        <% } %>
+
+    </div>
+
+</div>

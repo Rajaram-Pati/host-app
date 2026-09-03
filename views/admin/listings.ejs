@@ -1,0 +1,74 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <div class="admin-heading">
+    <h2>Listing Moderation</h2>
+    <div class="admin-tabs">
+      <a href="/admin/host-requests">Host Requests</a>
+      <a href="/admin/listings" class="active">Listings</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/users">Users</a>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Host</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let listing of listings) { %>
+              <tr>
+                <td>
+                  <strong><%= listing.title %></strong>
+                  <% if (listing.rejectionReason) { %>
+                    <div class="text-danger small"><%= listing.rejectionReason %></div>
+                  <% } %>
+                </td>
+                <td><%= listing.owner ? listing.owner.username : "-" %></td>
+                <td><%= listing.createdAt ? listing.createdAt.toLocaleDateString("en-IN") : "-" %></td>
+                <td>
+                  <span class="badge text-bg-<%= listing.status === 'approved' ? 'success' : listing.status === 'rejected' ? 'danger' : 'warning' %>">
+                    <%= listing.status %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/listings/<%= listing._id %>" class="btn btn-sm btn-outline-secondary">View</a>
+                  <% if (listing.status !== "approved") { %>
+                    <form method="POST" action="/admin/listings/<%= listing._id %>/approve">
+                      <button class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                  <% } %>
+                  <form method="POST" action="/admin/listings/<%= listing._id %>/reject">
+                    <select name="rejectionReason" class="form-select form-select-sm" required>
+                      <option value="Fake Property">Fake Property</option>
+                      <option value="Duplicate Listing">Duplicate Listing</option>
+                      <option value="Poor Images">Poor Images</option>
+                      <option value="Invalid Address">Invalid Address</option>
+                      <option value="Violates Policy">Violates Policy</option>
+                    </select>
+                    <button class="btn btn-sm btn-danger">Reject</button>
+                  </form>
+                  <form method="POST" action="/admin/listings/<%= listing._id %>/delete">
+                    <button class="btn btn-sm btn-dark">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (listings.length === 0) { %>
+        <p class="text-muted mb-0">No listings to moderate.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

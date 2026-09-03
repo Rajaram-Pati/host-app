@@ -1,0 +1,215 @@
+<% layout("/layouts/boilerplate") %>
+<%
+    const fallbackCategories = [
+        { value: "trending", label: "Trending" },
+        { value: "rooms", label: "Rooms" },
+        { value: "icons", label: "Icons" },
+        { value: "mountain", label: "Mountains" },
+        { value: "sea", label: "Sea" },
+        { value: "beach", label: "Beach" },
+        { value: "camping", label: "Camping" },
+        { value: "farms", label: "Farms" },
+        { value: "arctic", label: "Arctic" },
+        { value: "desert", label: "Desert" }
+    ];
+    const formCategories = typeof categoryOptions !== "undefined" ? categoryOptions : fallbackCategories;
+%>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3">
+            <div class="edit-form-container">
+                <h2 class="mb-4 text-center">Edit Listing</h2>
+
+                <form
+                    method="POST"
+                    action="/listings/<%= listing._id %>?_method=PUT"
+                    class="needs-validation"
+                    novalidate
+                    enctype="multipart/form-data"
+                >
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input
+                            type="text"
+                            name="listing[title]"
+                            value="<%= listing.title %>"
+                            class="form-control"
+                            required
+                        >
+                        <div class="invalid-feedback">Please enter title.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea
+                            name="listing[description]"
+                            class="form-control"
+                            rows="4"
+                            required
+                        ><%= listing.description %></textarea>
+                        <div class="invalid-feedback">Please enter description.</div>
+                    </div>
+
+                    <% if (listing.image && listing.image.url) { %>
+                        <div class="mb-3">
+                            <img
+                                src="<%= listing.image.url %>"
+                                class="img-fluid rounded"
+                                alt="Current listing image"
+                            >
+                        </div>
+                    <% } %>
+
+                    <div class="mb-3">
+                        <label class="form-label">Upload New Cover Photo</label>
+                        <input
+                            type="file"
+                            name="image"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select
+                            name="listing[category]"
+                            class="form-select"
+                            required
+                        >
+                            <% for (let category of formCategories) { %>
+                                <option
+                                    value="<%= category.value %>"
+                                    <%= listing.category === category.value ? "selected" : "" %>
+                                >
+                                    <%= category.label %>
+                                </option>
+                            <% } %>
+                        </select>
+                        <div class="invalid-feedback">Please select a category.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Price</label>
+                        <input
+                            type="number"
+                            name="listing[price]"
+                            value="<%= listing.price %>"
+                            class="form-control"
+                            min="0"
+                            required
+                        >
+                        <div class="invalid-feedback">Please enter price.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Maximum Guests</label>
+                            <input type="number" name="listing[maxGuests]" value="<%= listing.maxGuests || 1 %>" class="form-control" min="1" required>
+                            <div class="invalid-feedback">Please enter maximum guests.</div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Bedrooms</label>
+                            <input type="number" name="listing[bedrooms]" value="<%= listing.bedrooms || 0 %>" class="form-control" min="0" required>
+                            <div class="invalid-feedback">Please enter bedrooms.</div>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Bathrooms</label>
+                            <input type="number" name="listing[bathrooms]" value="<%= listing.bathrooms || 0 %>" class="form-control" min="0" required>
+                            <div class="invalid-feedback">Please enter bathrooms.</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Minimum Stay</label>
+                            <input type="number" name="listing[minStay]" value="<%= listing.minStay || 1 %>" class="form-control" min="1" required>
+                            <div class="invalid-feedback">Please enter minimum stay.</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Maximum Stay</label>
+                            <input type="number" name="listing[maxStay]" value="<%= listing.maxStay || 30 %>" class="form-control" min="1" required>
+                            <div class="invalid-feedback">Please enter maximum stay.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Amenities</label>
+                        <input
+                            type="text"
+                            name="listing[amenities]"
+                            value="<%= Array.isArray(listing.amenities) ? listing.amenities.join(', ') : '' %>"
+                            class="form-control"
+                            placeholder="WiFi, Kitchen, Parking"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contact Phone Number</label>
+                        <input
+                            type="tel"
+                            name="listing[contactPhone]"
+                            value="<%= listing.contactPhone || '' %>"
+                            class="form-control"
+                            required
+                        >
+                        <div class="invalid-feedback">Please enter contact phone number.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input
+                            type="text"
+                            name="listing[location]"
+                            value="<%= listing.location %>"
+                            class="form-control"
+                            required
+                        >
+                        <div class="invalid-feedback">Please enter location.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Country</label>
+                        <input
+                            type="text"
+                            name="listing[country]"
+                            value="<%= listing.country %>"
+                            class="form-control"
+                            required
+                        >
+                        <div class="invalid-feedback">Please enter country.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Upload Additional Photo 1</label>
+                            <input type="file" name="additionalPhoto1" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Upload Additional Photo 2</label>
+                            <input type="file" name="additionalPhoto2" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="card declaration-card mb-4">
+                        <div class="card-body">
+                            <h5 class="mb-3">Host Declaration</h5>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="listing[declaration]" id="listingDeclaration" required>
+                                <label class="form-check-label" for="listingDeclaration">
+                                    I confirm this property exists, the images and information are accurate, and I agree to the Terms and Conditions.
+                                </label>
+                                <div class="invalid-feedback">Please accept the Host Declaration.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn update-btn">Update Listing</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <div class="admin-heading">
+    <h2>Host Requests</h2>
+    <div class="admin-tabs">
+      <a href="/admin/host-requests" class="active">Host Requests</a>
+      <a href="/admin/listings">Listings</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/users">Users</a>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let request of requests) { %>
+              <tr>
+                <td><%= request.fullName %></td>
+                <td><%= request.user ? request.user.email : "-" %></td>
+                <td><%= request.phone %></td>
+                <td><%= request.city %></td>
+                <td>
+                  <span class="badge text-bg-<%= request.status === 'approved' ? 'success' : request.status === 'rejected' ? 'danger' : 'warning' %>">
+                    <%= request.status %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/admin/host-requests/<%= request._id %>" class="btn btn-sm btn-outline-secondary">View Details</a>
+                  <% if (request.status === "pending") { %>
+                    <form method="POST" action="/admin/host-requests/<%= request._id %>/approve">
+                      <button class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                    <form method="POST" action="/admin/host-requests/<%= request._id %>/reject">
+                      <input type="text" name="rejectionReason" class="form-control form-control-sm" placeholder="Reason" required>
+                      <button class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (requests.length === 0) { %>
+        <p class="text-muted mb-0">No host requests yet.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

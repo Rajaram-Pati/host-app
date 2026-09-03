@@ -1,0 +1,57 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <div class="admin-heading">
+    <h2>User Management</h2>
+    <div class="admin-tabs">
+      <a href="/admin/host-requests">Host Requests</a>
+      <a href="/admin/listings">Listings</a>
+      <a href="/admin/bookings">Bookings</a>
+      <a href="/admin/users" class="active">Users</a>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Host Status</th>
+              <th>Role</th>
+              <th>Suspended</th>
+              <th>Save</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let user of users) { %>
+              <tr>
+                <td><%= user.username %></td>
+                <td><%= user.email %></td>
+                <td><%= user.hostRequestStatus %></td>
+                <form method="POST" action="/admin/users/<%= user._id %>">
+                  <td>
+                    <select name="role" class="form-select form-select-sm">
+                      <option value="user" <%= user.role === "user" ? "selected" : "" %>>user</option>
+                      <option value="host" <%= user.role === "host" ? "selected" : "" %>>host</option>
+                      <% if (currentUser.role === "superAdmin") { %>
+                        <option value="admin" <%= user.role === "admin" ? "selected" : "" %>>admin</option>
+                        <option value="superAdmin" <%= user.role === "superAdmin" ? "selected" : "" %>>superAdmin</option>
+                      <% } %>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="checkbox" name="isSuspended" class="form-check-input" <%= user.isSuspended ? "checked" : "" %>>
+                  </td>
+                  <td><button class="btn btn-sm btn-primary">Save</button></td>
+                </form>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

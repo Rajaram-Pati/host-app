@@ -1,0 +1,162 @@
+<%
+  const navFilters = typeof filters !== "undefined" ? filters : {};
+  const navActiveCategory = typeof activeCategory !== "undefined" ? activeCategory : "";
+  const navCategories = typeof categoryOptions !== "undefined" ? categoryOptions : [];
+  const navCurrentUser = typeof currentUser !== "undefined" ? currentUser : null;
+  const navUserRole = navCurrentUser && navCurrentUser.role ? navCurrentUser.role : "user";
+  const navHostRequestStatus = navCurrentUser && navCurrentUser.hostRequestStatus ? navCurrentUser.hostRequestStatus : "none";
+%>
+
+<header class="airbnb-header sticky-top">
+<nav class="navbar navbar-expand-lg bg-white">
+  <div class="container-fluid px-4">
+
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold airbnb-brand" href="/listings">
+      <i class="fa-brands fa-airbnb"></i> WanderLust
+    </a>
+
+    <form action="/listings" method="GET" class="header-search d-none d-lg-grid">
+      <input
+        type="text"
+        name="country"
+        class="country-search-input"
+        list="country-options"
+        placeholder="Search country"
+        value="<%= navFilters.country || '' %>"
+      >
+      <input
+        type="number"
+        name="minPrice"
+        placeholder="Min"
+        min="0"
+        value="<%= navFilters.minPrice || '' %>"
+      >
+      <input
+        type="number"
+        name="maxPrice"
+        placeholder="Max"
+        min="0"
+        value="<%= navFilters.maxPrice || '' %>"
+      >
+      <% if (navActiveCategory) { %>
+        <input type="hidden" name="category" value="<%= navActiveCategory %>">
+      <% } %>
+      <button aria-label="Search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+    </form>
+
+    <!-- Toggle button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar content -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <div class="navbar-nav ms-auto">
+
+        <!-- Always visible links -->
+        <a class="nav-link" href="/listings">
+          <i class="fa-solid fa-list"></i> All Listings
+        </a>
+
+        <!-- If user NOT logged in -->
+        <% if (!navCurrentUser) { %>
+
+          <a class="nav-link" href="/signup">
+            Sign Up
+          </a>
+
+          <a class="nav-link" href="/login">
+            Login
+          </a>
+
+        <% } %>
+
+        <!-- If user IS logged in -->
+        <% if (navCurrentUser) { %>
+
+          <span class="nav-link">
+            Hello, <%= navCurrentUser.username %>
+          </span>
+
+          <a class="nav-link" href="/profile">
+            <i class="fa-solid fa-user"></i> Profile
+          </a>
+
+          <a class="nav-link" href="/bookings/my-trips">
+            <i class="fa-solid fa-suitcase-rolling"></i> My Trips
+          </a>
+
+          <% if (navUserRole === "user" && navHostRequestStatus !== "pending") { %>
+            <a class="nav-link" href="/host/request">
+              <i class="fa-solid fa-house-user"></i> Become a Host
+            </a>
+          <% } %>
+
+          <% if (["host", "admin", "superAdmin"].includes(navUserRole)) { %>
+            <a class="nav-link" href="/listings/new">
+              <i class="fa-solid fa-plus"></i> Add Listing
+            </a>
+          <% } %>
+
+          <% if (navUserRole === "host") { %>
+            <a class="nav-link" href="/host/dashboard">
+              <i class="fa-solid fa-chart-line"></i> Host Dashboard
+            </a>
+          <% } %>
+
+          <% if (["admin", "superAdmin"].includes(navUserRole)) { %>
+            <a class="nav-link" href="/admin/host-requests">
+              <i class="fa-solid fa-shield-halved"></i> Admin
+            </a>
+          <% } %>
+
+          <a class="nav-link" href="/logout">
+            Logout
+          </a>
+
+        <% } %>
+
+      </div>
+
+    </div>
+
+  </div>
+</nav>
+
+<form action="/listings" method="GET" class="mobile-filter-search d-lg-none">
+  <input
+    type="text"
+    name="country"
+    class="country-search-input"
+    list="country-options"
+    placeholder="Country"
+    value="<%= navFilters.country || '' %>"
+  >
+  <input
+    type="number"
+    name="minPrice"
+    placeholder="Min"
+    min="0"
+    value="<%= navFilters.minPrice || '' %>"
+  >
+  <input
+    type="number"
+    name="maxPrice"
+    placeholder="Max"
+    min="0"
+    value="<%= navFilters.maxPrice || '' %>"
+  >
+  <% if (navActiveCategory) { %>
+    <input type="hidden" name="category" value="<%= navActiveCategory %>">
+  <% } %>
+  <button aria-label="Search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+</form>
+
+<datalist id="country-options"></datalist>
+</header>

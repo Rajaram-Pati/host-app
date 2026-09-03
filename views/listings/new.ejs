@@ -1,0 +1,150 @@
+<% layout("/layouts/boilerplate") %>
+<%
+    const fallbackCategories = [
+        { value: "trending", label: "Trending" },
+        { value: "rooms", label: "Rooms" },
+        { value: "icons", label: "Icons" },
+        { value: "mountain", label: "Mountains" },
+        { value: "sea", label: "Sea" },
+        { value: "beach", label: "Beach" },
+        { value: "camping", label: "Camping" },
+        { value: "farms", label: "Farms" },
+        { value: "arctic", label: "Arctic" },
+        { value: "desert", label: "Desert" }
+    ];
+    const formCategories = typeof categoryOptions !== "undefined" ? categoryOptions : fallbackCategories;
+%>
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+      <div class="new-form-container">
+        <h2 class="mb-4 text-center">Create New Listing</h2>
+
+        <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label">Property Title</label>
+              <input type="text" name="listing[title]" class="form-control" placeholder="Modern apartment near the beach" required>
+              <div class="invalid-feedback">Please enter property title.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Category</label>
+              <select name="listing[category]" class="form-select" required>
+                <option value="" selected disabled>Select category</option>
+                <% for (let category of formCategories) { %>
+                  <option value="<%= category.value %>"><%= category.label %></option>
+                <% } %>
+              </select>
+              <div class="invalid-feedback">Please select a category.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea name="listing[description]" class="form-control" rows="4" required></textarea>
+              <div class="invalid-feedback">Please enter description.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Price</label>
+              <input type="number" name="listing[price]" class="form-control" min="0" required>
+              <div class="invalid-feedback">Please enter price.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Maximum Guests</label>
+              <input type="number" name="listing[maxGuests]" class="form-control" min="1" required>
+              <div class="invalid-feedback">Please enter maximum guests.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Contact Phone Number</label>
+              <input type="tel" name="listing[contactPhone]" class="form-control" required>
+              <div class="invalid-feedback">Please enter contact phone number.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Minimum Stay</label>
+              <input type="number" name="listing[minStay]" class="form-control" min="1" value="1" required>
+              <div class="invalid-feedback">Please enter minimum stay.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Maximum Stay</label>
+              <input type="number" name="listing[maxStay]" class="form-control" min="1" value="30" required>
+              <div class="invalid-feedback">Please enter maximum stay.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Country</label>
+              <input type="text" name="listing[country]" class="form-control" required>
+              <div class="invalid-feedback">Please enter country.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Location</label>
+              <input type="text" name="listing[location]" class="form-control" required>
+              <div class="invalid-feedback">Please enter location.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Bedrooms</label>
+              <input type="number" name="listing[bedrooms]" class="form-control" min="0" required>
+              <div class="invalid-feedback">Please enter bedrooms.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Bathrooms</label>
+              <input type="number" name="listing[bathrooms]" class="form-control" min="0" required>
+              <div class="invalid-feedback">Please enter bathrooms.</div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Amenities</label>
+              <input type="text" name="listing[amenities]" class="form-control" placeholder="WiFi, Kitchen, Parking">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Upload Cover Photo</label>
+              <input type="file" name="image" class="form-control" accept="image/*" required>
+              <div class="invalid-feedback">Please upload a cover photo.</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Upload Additional Photo 1</label>
+              <input type="file" name="additionalPhoto1" class="form-control" accept="image/*">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Upload Additional Photo 2</label>
+              <input type="file" name="additionalPhoto2" class="form-control" accept="image/*">
+            </div>
+          </div>
+
+          <div class="card declaration-card mt-4">
+            <div class="card-body">
+              <h5 class="mb-3">Host Declaration</h5>
+              <ul class="mb-3">
+                <li>This property exists.</li>
+                <li>Images belong to this property.</li>
+                <li>Information is accurate.</li>
+                <li>I have permission to rent this property.</li>
+                <li>Fake listings are prohibited.</li>
+                <li>I understand my account may be suspended if fake information is submitted.</li>
+                <li>I agree to the Terms and Conditions.</li>
+              </ul>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="listing[declaration]" id="listingDeclaration" required>
+                <label class="form-check-label" for="listingDeclaration">I confirm that all statements above are true.</label>
+                <div class="invalid-feedback">Please accept the Host Declaration.</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn add-btn mt-4">Submit Listing</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

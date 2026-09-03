@@ -1,0 +1,149 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h2 class="mb-1">Host Dashboard</h2>
+      <p class="text-muted mb-0">Track your listings and approval status.</p>
+    </div>
+    <a href="/listings/new" class="btn add-btn dashboard-action">
+      <i class="fa-solid fa-plus"></i> Create Listing
+    </a>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Total Listings</span><strong><%= stats.totalListings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Pending Listings</span><strong><%= stats.pendingListings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Approved Listings</span><strong><%= stats.approvedListings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Rejected Listings</span><strong><%= stats.rejectedListings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Total Bookings</span><strong><%= stats.totalBookings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Pending Requests</span><strong><%= stats.pendingBookings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Confirmed</span><strong><%= stats.confirmedBookings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Cancelled</span><strong><%= stats.cancelledBookings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Completed</span><strong><%= stats.completedBookings %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Upcoming Guests</span><strong><%= stats.upcomingGuests %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Check-ins Today</span><strong><%= stats.upcomingCheckIns %></strong></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card"><div class="card-body"><span>Revenue</span><strong>&#8377; <%= Number(stats.estimatedRevenue || 0).toLocaleString("en-IN") %></strong></div></div>
+    </div>
+  </div>
+
+  <div class="card table-card mb-4">
+    <div class="card-body">
+      <h4 class="mb-3">Booking Requests</h4>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Listing</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Guests</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let booking of bookings) { %>
+              <tr>
+                <td><%= booking.guest ? booking.guest.username : "-" %></td>
+                <td><%= booking.listing ? booking.listing.title : "Deleted listing" %></td>
+                <td><%= booking.checkIn.toLocaleDateString("en-IN") %></td>
+                <td><%= booking.checkOut.toLocaleDateString("en-IN") %></td>
+                <td><%= booking.totalGuests %></td>
+                <td>&#8377; <%= Number(booking.totalPrice || 0).toLocaleString("en-IN") %></td>
+                <td>
+                  <span class="badge text-bg-<%= booking.bookingStatus === 'Confirmed' ? 'success' : booking.bookingStatus === 'Cancelled' ? 'danger' : booking.bookingStatus === 'Completed' ? 'secondary' : 'warning' %>">
+                    <%= booking.bookingStatus %>
+                  </span>
+                </td>
+                <td class="admin-actions">
+                  <a href="/bookings/<%= booking._id %>" class="btn btn-sm btn-outline-secondary">View Details</a>
+                  <% if (booking.bookingStatus === "Pending") { %>
+                    <form method="POST" action="/bookings/<%= booking._id %>/approve">
+                      <button class="btn btn-sm btn-success">Approve</button>
+                    </form>
+                    <form method="POST" action="/bookings/<%= booking._id %>/reject">
+                      <input type="text" name="cancellationReason" class="form-control form-control-sm" placeholder="Reason" required>
+                      <button class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                  <% } else if (booking.bookingStatus === "Confirmed") { %>
+                    <form method="POST" action="/bookings/<%= booking._id %>/cancel">
+                      <input type="text" name="cancellationReason" class="form-control form-control-sm" placeholder="Reason">
+                      <button class="btn btn-sm btn-danger">Cancel</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (bookings.length === 0) { %>
+        <p class="text-muted mb-0">No booking requests yet.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <h4 class="mb-3">Your Listings</h4>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Status</th>
+              <th>Reason</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let listing of listings) { %>
+              <tr>
+                <td><%= listing.title %></td>
+                <td>
+                  <span class="badge text-bg-<%= listing.status === 'approved' ? 'success' : listing.status === 'rejected' ? 'danger' : 'warning' %>">
+                    <%= listing.status %>
+                  </span>
+                </td>
+                <td><%= listing.rejectionReason || "-" %></td>
+                <td>
+                  <a class="btn btn-sm btn-outline-secondary" href="/listings/<%= listing._id %>">View</a>
+                  <a class="btn btn-sm btn-outline-primary" href="/listings/<%= listing._id %>/edit">Edit</a>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (listings.length === 0) { %>
+        <p class="text-muted mb-0">No listings yet.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

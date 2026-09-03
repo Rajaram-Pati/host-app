@@ -1,0 +1,106 @@
+<% layout("/layouts/boilerplate") %>
+<%
+  const statusClass = (status) => status === "Confirmed" ? "success" : status === "Cancelled" ? "danger" : status === "Completed" ? "secondary" : "warning";
+%>
+
+<div class="container mt-4">
+  <div class="admin-heading">
+    <h2>Booking Management</h2>
+    <div class="admin-tabs">
+      <a href="/admin/host-requests">Host Requests</a>
+      <a href="/admin/listings">Listings</a>
+      <a href="/admin/bookings" class="active">Bookings</a>
+      <a href="/admin/users">Users</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Total</span><strong><%= stats.totalBookings %></strong></div></div></div>
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Pending</span><strong><%= stats.pendingBookings %></strong></div></div></div>
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Confirmed</span><strong><%= stats.confirmedBookings %></strong></div></div></div>
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Cancelled</span><strong><%= stats.cancelledBookings %></strong></div></div></div>
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Completed</span><strong><%= stats.completedBookings %></strong></div></div></div>
+    <div class="col-md-2"><div class="card stat-card"><div class="card-body"><span>Today</span><strong><%= stats.todaysBookings %></strong></div></div></div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card table-card">
+        <div class="card-body">
+          <h4 class="mb-3">Most Booked Listings</h4>
+          <% if (mostBookedListings.length) { %>
+            <% for (let item of mostBookedListings) { %>
+              <div class="d-flex justify-content-between border-bottom py-2">
+                <span><%= item.listing.title %></span>
+                <strong><%= item.count %></strong>
+              </div>
+            <% } %>
+          <% } else { %>
+            <p class="text-muted mb-0">No booking data yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card table-card">
+        <div class="card-body">
+          <h4 class="mb-3">Top Hosts</h4>
+          <% if (topHosts.length) { %>
+            <% for (let item of topHosts) { %>
+              <div class="d-flex justify-content-between border-bottom py-2">
+                <span><%= item.host.username %></span>
+                <strong><%= item.count %> bookings</strong>
+              </div>
+            <% } %>
+          <% } else { %>
+            <p class="text-muted mb-0">No host booking data yet.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Host</th>
+              <th>Listing</th>
+              <th>Dates</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let booking of bookings) { %>
+              <tr>
+                <td><%= booking.guest ? booking.guest.username : "-" %></td>
+                <td><%= booking.host ? booking.host.username : "-" %></td>
+                <td><%= booking.listing ? booking.listing.title : "Deleted listing" %></td>
+                <td><%= booking.checkIn.toLocaleDateString("en-IN") %> - <%= booking.checkOut.toLocaleDateString("en-IN") %></td>
+                <td>&#8377; <%= Number(booking.totalPrice || 0).toLocaleString("en-IN") %></td>
+                <td><span class="badge text-bg-<%= statusClass(booking.bookingStatus) %>"><%= booking.bookingStatus %></span></td>
+                <td class="admin-actions">
+                  <a href="/bookings/<%= booking._id %>" class="btn btn-sm btn-outline-secondary">View Details</a>
+                  <% if (["Pending", "Confirmed"].includes(booking.bookingStatus)) { %>
+                    <form method="POST" action="/bookings/<%= booking._id %>/cancel">
+                      <input type="text" name="cancellationReason" class="form-control form-control-sm" placeholder="Reason" value="Cancelled by admin.">
+                      <button class="btn btn-sm btn-danger">Cancel</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if (bookings.length === 0) { %>
+        <p class="text-muted mb-0">No bookings yet.</p>
+      <% } %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <a href="/admin/host-requests" class="btn btn-outline-secondary btn-sm mb-3">Back</a>
+
+  <div class="card table-card">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+        <div>
+          <h2 class="mb-1"><%= hostRequest.fullName %></h2>
+          <p class="text-muted mb-0"><%= hostRequest.user ? hostRequest.user.email : "-" %></p>
+        </div>
+        <span class="badge text-bg-<%= hostRequest.status === 'approved' ? 'success' : hostRequest.status === 'rejected' ? 'danger' : 'warning' %>">
+          <%= hostRequest.status %>
+        </span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-4"><strong>Phone:</strong> <%= hostRequest.phone %></div>
+        <div class="col-md-4"><strong>City:</strong> <%= hostRequest.city %></div>
+        <div class="col-md-4"><strong>State:</strong> <%= hostRequest.state %></div>
+        <div class="col-md-4"><strong>Country:</strong> <%= hostRequest.country %></div>
+        <div class="col-md-8"><strong>Government ID:</strong> <%= hostRequest.governmentIdNumber %></div>
+        <div class="col-12"><strong>Reason:</strong><p class="mt-2"><%= hostRequest.reason %></p></div>
+        <% if (hostRequest.rejectionReason) { %>
+          <div class="col-12 alert alert-danger"><%= hostRequest.rejectionReason %></div>
+        <% } %>
+        <% if (hostRequest.governmentIdImage && hostRequest.governmentIdImage.url) { %>
+          <div class="col-md-6">
+            <img src="<%= hostRequest.governmentIdImage.url %>" class="img-fluid rounded" alt="Government ID">
+          </div>
+        <% } %>
+      </div>
+
+      <% if (hostRequest.status === "pending") { %>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <form method="POST" action="/admin/host-requests/<%= hostRequest._id %>/approve">
+            <button class="btn btn-success">Approve</button>
+          </form>
+          <form method="POST" action="/admin/host-requests/<%= hostRequest._id %>/reject" class="d-flex gap-2">
+            <input type="text" name="rejectionReason" class="form-control" placeholder="Rejection reason" required>
+            <button class="btn btn-danger">Reject</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
